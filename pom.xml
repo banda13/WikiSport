@@ -13,6 +13,11 @@
         <version>2.0.5.RELEASE</version>
     </parent>
 
+    <properties>
+        <java.version>1.8</java.version>
+        <wikidataToolkitVersion>0.9.0</wikidataToolkitVersion>
+    </properties>
+
     <dependencies>
         <!-- SPRING -->
         <dependency>
@@ -67,12 +72,29 @@
             <artifactId>jquery</artifactId>
             <version>1.9.1</version>
         </dependency>
+
+        <!-- WIKIDATA -->
+        <dependency>
+            <groupId>org.wikidata.wdtk</groupId>
+            <artifactId>wdtk-datamodel</artifactId>
+            <version>${wikidataToolkitVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wikidata.wdtk</groupId>
+            <artifactId>wdtk-dumpfiles</artifactId>
+            <version>${wikidataToolkitVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wikidata.wdtk</groupId>
+            <artifactId>wdtk-rdf</artifactId>
+            <version>${wikidataToolkitVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wikidata.wdtk</groupId>
+            <artifactId>wdtk-wikibaseapi</artifactId>
+            <version>${wikidataToolkitVersion}</version>
+        </dependency>
     </dependencies>
-
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
-
 
     <build>
         <plugins>
