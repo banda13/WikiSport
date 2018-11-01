@@ -15,7 +15,6 @@ public class TestController {
 
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
-
     @GetMapping("/hello")
     public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
         logger.info("Hello " + name);
