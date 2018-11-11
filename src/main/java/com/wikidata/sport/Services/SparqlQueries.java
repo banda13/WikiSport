@@ -13,4 +13,12 @@ public class SparqlQueries {
             "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n" +
             "}\n" +
             "ORDER BY ?Name";
+
+    public static final String getWinners = "SELECT DISTINCT ?leagueLabel ?nyertesLabel ?merkozesek_szama WHERE {\n" +
+            "  ?league wdt:P3450 wd:Q9448.\n" +
+            "  ?league wdt:P1346 ?nyertes.\n" +
+            "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n" +
+            "  OPTIONAL { ?league wdt:P1350 ?merkozesek_szama. }\n" +
+            "}\n" +
+            "ORDER BY ?korszakLabel";
 }

@@ -15,9 +15,12 @@ public class DefaultController {
 
     @GetMapping("/")
     public String home(Model model) {
-        //TODO ez majd be kell injektálni
+        //TODO a servicet majd be kell injektálni
+        List<WikidataObject> respone = new ArrayList<>();
         WikidataTestService test = new WikidataTestService();
-        model.addAttribute("teams", test.getPremierLeagueTeams());
+        respone.add(test.getPremierLeagueTeams());
+        respone.add(test.getWinners());
+        model.addAttribute("response", respone);
         return "/home";
     }
 

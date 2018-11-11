@@ -30,6 +30,18 @@ public class WikidataTestService {
         }
     }
 
+    public WikidataObject getWinners(){
+        try {
+            Endpoint sp = new Endpoint(serviceUrl, false);
+            WikidataObject rs = new WikidataObject("Champions");
+            rs.setUpFromEndpointResponse(sp.query(SparqlQueries.getWinners));
+            return rs;
+        } catch(EndpointException eex) {
+            logger.error("Failed to get premier league teams", eex);
+            return null;
+        }
+    }
+
     public static void main(String [] args){
         //getPremierLeagueTeams();
     }

@@ -10,23 +10,25 @@
 
 <div class="container">
     <div>
-        <h2 th:text="${teams.title}">&nbsp;</h2>
-        <table class="table table-bordered table-hover table-responsive">
-        <thead>
-            <tr>
-                <div th:each="header : ${teams.headers}">
-                    <th th:text="${header}">&nbsp;</th>
-                </div>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="row : ${teams.rows}">
-                <div th:each="value : ${row}">
-                    <td th:text="${value}">&nbsp;</td>
-                </div>
-            </tr>
-        </tbody>
-        </table>
+        <div th:each="table : ${response}">
+            <h2 th:text="${table.title}">&nbsp;</h2>
+            <table class="table table-bordered table-hover table-responsive">
+            <thead>
+                <tr>
+                    <div th:each="header : ${table.headers}">
+                        <th th:text="${header}">&nbsp;</th>
+                    </div>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="row : ${table.rows}">
+                    <div th:each="value : ${row}">
+                        <td th:text="${value}">&nbsp;</td>
+                    </div>
+                </tr>
+            </tbody>
+            </table>
+        </div>
     </div>
     <div class="starter-template">
         <h3>1. Visit <a th:href="@{/admin}">Admin page (Spring Security protected, Need Admin Role)</a></h3>
