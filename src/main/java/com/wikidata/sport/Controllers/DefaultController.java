@@ -1,6 +1,8 @@
 package com.wikidata.sport.Controllers;
 
 import com.wikidata.sport.Model.Champions;
+import com.wikidata.sport.Model.WikidataObject;
+import com.wikidata.sport.Services.WikidataTestService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,12 +15,9 @@ public class DefaultController {
 
     @GetMapping("/")
     public String home(Model model) {
-        List<Champions> winners = new ArrayList<>();
-        winners.add(new Champions("1996-97", "Manchester United", "Newcastle United", "Liverpool"));
-        winners.add(new Champions("1997-98", "Manchester United", "Newcastle United", "Arsenal"));
-        winners.add(new Champions("1998-99", "Arsenal", "Manchester United", "Liverpool"));
-        winners.add(new Champions("1999-2000", "Manchester United", "Arsenal", "\tChelsea"));
-        model.addAttribute("winners", winners);
+        //TODO ez majd be kell injektálni
+        WikidataTestService test = new WikidataTestService();
+        model.addAttribute("teams", test.getPremierLeagueTeams());
         return "/home";
     }
 

@@ -1,5 +1,8 @@
 package com.wikidata.sport.Services;
 
+import com.bordercloud.sparql.Endpoint;
+import com.bordercloud.sparql.EndpointException;
+import com.wikidata.sport.Model.WikidataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wikidata.wdtk.datamodel.interfaces.*;
@@ -7,13 +10,29 @@ import org.wikidata.wdtk.wikibaseapi.WbSearchEntitiesResult;
 import org.wikidata.wdtk.wikibaseapi.WikibaseDataFetcher;
 import org.wikidata.wdtk.wikibaseapi.apierrors.MediaWikiApiErrorException;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 
 public class WikidataTestService {
 
     private static final Logger logger = LoggerFactory.getLogger(WikidataTestService.class);
+    private static final String serviceUrl = "https://query.wikidata.org/sparql";
+
+    public WikidataObject getPremierLeagueTeams() {
+        try {
+            Endpoint sp = new Endpoint(serviceUrl, false);
+            WikidataObject rs = new WikidataObject("Premier league teams");
+            rs.setUpFromEndpointResponse(sp.query(SparqlQueries.getTeamsInPremierLeague));
+            return rs;
+        } catch(EndpointException eex) {
+            logger.error("Failed to get premier league teams", eex);
+            return null;
+        }
+    }
+
+    public static void main(String [] args){
+        //getPremierLeagueTeams();
+    }
 
     public void searchTest() throws MediaWikiApiErrorException {
         WikibaseDataFetcher wbdf = WikibaseDataFetcher.getWikidataDataFetcher();
@@ -37,10 +56,5 @@ public class WikidataTestService {
                 logger.info(propQ4448.getSiteIri() + propQ4448);
             }
         }
-    }
-
-    public static void main(String args[]) throws MediaWikiApiErrorException {
-        WikidataTestService service = new WikidataTestService();
-        service.searchTest();
     }
 }

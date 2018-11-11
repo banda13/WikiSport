@@ -2,9 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>WikiSport</title>
-
     <div th:replace="fragments/header :: header-css"/>
-
 </head>
 <body>
 
@@ -12,22 +10,20 @@
 
 <div class="container">
     <div>
-        <h1>Champions</h1>
+        <h2 th:text="${teams.title}">&nbsp;</h2>
         <table class="table table-bordered table-hover table-responsive">
         <thead>
             <tr>
-                <th>Season</th>
-                <th>Champion</th>
-                <th>Second</th>
-                <th>Third</th>
+                <div th:each="header : ${teams.headers}">
+                    <th th:text="${header}">&nbsp;</th>
+                </div>
             </tr>
         </thead>
         <tbody>
-            <tr th:each="winner : ${winners}">
-                <td th:text="${winner.season}">&nbsp;</td>
-                <td th:text="${winner.first}">&nbsp;</td>
-                <td th:text="${winner.second}">&nbsp;</td>
-                <td th:text="${winner.third}">&nbsp;</td>
+            <tr th:each="row : ${teams.rows}">
+                <div th:each="value : ${row}">
+                    <td th:text="${value}">&nbsp;</td>
+                </div>
             </tr>
         </tbody>
         </table>

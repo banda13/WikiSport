@@ -38,6 +38,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- hot swapping, disable cache for template, enable live reload -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
 
         <!-- SECURITY -->
         <dependency>
@@ -94,7 +100,29 @@
             <artifactId>wdtk-wikibaseapi</artifactId>
             <version>${wikidataToolkitVersion}</version>
         </dependency>
+
+        <!-- JENA SPARQL BUILDER -->
+        <!-- https://mvnrepository.com/artifact/org.apache.jena/jena-core -->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-core</artifactId>
+            <version>3.9.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.jena/jena-arq -->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-arq</artifactId>
+            <version>3.9.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.bordercloud.sparql</groupId>
+            <artifactId>sparql</artifactId>
+            <version>current</version>
+            </dependency>
+
     </dependencies>
+
 
     <build>
         <plugins>
