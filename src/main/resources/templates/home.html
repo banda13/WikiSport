@@ -11,11 +11,31 @@
 <div th:replace="fragments/header :: header"/>
 
 <div class="container">
-
+    <div>
+        <h1>Champions</h1>
+        <table class="table table-bordered table-hover table-responsive">
+        <thead>
+            <tr>
+                <th>Season</th>
+                <th>Champion</th>
+                <th>Second</th>
+                <th>Third</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="winner : ${winners}">
+                <td th:text="${winner.season}">&nbsp;</td>
+                <td th:text="${winner.first}">&nbsp;</td>
+                <td th:text="${winner.second}">&nbsp;</td>
+                <td th:text="${winner.third}">&nbsp;</td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
     <div class="starter-template">
-        <h2>1. Visit <a th:href="@{/admin}">Admin page (Spring Security protected, Need Admin Role)</a></h2>
-        <h2>2. Visit <a th:href="@{/user}">User page (Spring Security protected, Need User Role)</a></h2>
-        <h2>3. Visit <a th:href="@{/about}">Normal page</a></h2>
+        <h3>1. Visit <a th:href="@{/admin}">Admin page (Spring Security protected, Need Admin Role)</a></h3>
+        <h3>2. Visit <a th:href="@{/user}">User page (Spring Security protected, Need User Role)</a></h3>
+        <h3>3. Visit <a th:href="@{/about}">Normal page</a></h3>
     </div>
 
 </div>
