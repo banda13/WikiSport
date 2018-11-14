@@ -1,7 +1,7 @@
 package com.wikidata.sport.Controllers;
 
 import com.wikidata.sport.Application;
-import com.wikidata.sport.Services.WikidataTestService;
+import com.wikidata.sport.Services.WikidataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
@@ -21,8 +21,6 @@ public class TestController {
     public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) throws MediaWikiApiErrorException {
         logger.info("Hello " + name);
         model.addAttribute("name", name);
-        WikidataTestService service = new WikidataTestService();
-        service.searchTest();
         return "hello";
     }
 }

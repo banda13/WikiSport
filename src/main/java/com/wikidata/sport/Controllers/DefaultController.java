@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class DefaultController {
@@ -36,8 +37,9 @@ public class DefaultController {
 
     @GetMapping("/team")
     public String team(@RequestParam(name="name", required=true) String name, Model model){
-        //TODO implement wikidata search
-        model.addAttribute("team", name);
+        WikidataService test = new WikidataService();
+        Map<String, String> teamMapping = test.getIdsForTeams();
+        model.addAttribute("team", teamMapping.get(name));
         return "/team";
     }
 

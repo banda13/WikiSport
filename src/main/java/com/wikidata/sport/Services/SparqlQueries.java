@@ -21,4 +21,11 @@ public class SparqlQueries {
             "  OPTIONAL { ?league wdt:P1350 ?merkozesek_szama. }\n" +
             "}\n" +
             "ORDER BY ?korszakLabel";
+
+    public static final String getIdsForTeams = "SELECT DISTINCT ?teamLabel ?team  WHERE {\n" +
+            "  ?team (wdt:P118/wdt:P279*) wd:Q9448.\n" +
+            "  ?team (wdt:P31/wdt:P279*) wd:Q476028.\n" +
+            "  ?team wdt:P17 wd:Q145.\n" +
+            "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n" +
+            "}";
 }

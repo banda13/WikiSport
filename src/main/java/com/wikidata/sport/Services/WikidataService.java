@@ -50,10 +50,24 @@ public class WikidataService {
         }
     }
 
-
+    public Map<String, String> getIdsForTeams(){
+        try {
+            Map<String, String> result = new HashMap<>();
+            Endpoint sp = new Endpoint(serviceUrl, false);
+            HashMap response = (HashMap) sp.query(SparqlQueries.getIdsForTeams).get("result");
+            List<HashMap> rows = (List<HashMap>) response.get("rows");
+            for(HashMap row : rows){
+                result.put(row.get("teamLabel").toString(), row.get("team").toString());
+            }
+            return result;
+        } catch(EndpointException eex) {
+            logger.error("Failed to get premier league teams", eex);
+            return null;
+        }
+    }
 
     public static void main(String [] args){
-        //getPremierLeagueTeams();
+        //getIdsForTeams();
     }
 
 }
