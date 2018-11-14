@@ -8,7 +8,7 @@ public class WikidataObject {
 
     private List<String> headers = new ArrayList<>();
 
-    private List<List<Object>> rows = new ArrayList<>();
+    private List<List<WikidataRowObject>> rows = new ArrayList<>();
 
     public WikidataObject() {
     }
@@ -25,9 +25,6 @@ public class WikidataObject {
         return headers;
     }
 
-    public List<List<Object>> getRows() {
-        return rows;
-    }
 
     public void setTitle(String title) {
         this.title = title;
@@ -37,17 +34,43 @@ public class WikidataObject {
         this.headers = headers;
     }
 
-    public void setRows(List<List<Object>> rows) {
+    public List<List<WikidataRowObject>> getRows() {
+        return rows;
+    }
+
+    public void setRows(List<List<WikidataRowObject>> rows) {
         this.rows = rows;
+    }
+
+    public void changeRowType(int rowIndex, WikidataClientObjectType newType){
+        for(List<WikidataRowObject> row : rows){
+            for(int i = 0; i < row.size(); i++){
+                if(i == rowIndex){
+                    row.get(i).setType(newType);
+                }
+            }
+        }
+    }
+
+    public void changeRowTypeForCustomLink(int rowIndex, String link){
+        for(List<WikidataRowObject> row : rows){
+            for(int i = 0; i < row.size(); i++){
+                if(i == rowIndex){
+                    row.get(i).setType(WikidataClientObjectType.LINK);
+                    String linkUrl = link + row.get(i).getValue().toString();
+                    row.get(i).setLinkInfo(linkUrl);
+                }
+            }
+        }
     }
 
     public void setUpFromEndpointResponse(HashMap response){
         HashMap result = (HashMap) response.get("result");
         headers = (ArrayList<String>) result.get("variables");
         for(HashMap<String, Object> row : (ArrayList<HashMap>) result.get("rows")){
-            List<Object> values = new ArrayList<>();
+            List<WikidataRowObject> values = new ArrayList<>();
             for(String header : headers){
-                values.add(row.get(header));
+                values.add(new WikidataRowObject(row.get(header), WikidataClientObjectType.TEXT));
             }
             rows.add(values);
         }

@@ -2,6 +2,7 @@ package com.wikidata.sport.Services;
 
 import com.bordercloud.sparql.Endpoint;
 import com.bordercloud.sparql.EndpointException;
+import com.wikidata.sport.Model.WikidataClientObjectType;
 import com.wikidata.sport.Model.WikidataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +14,9 @@ import org.wikidata.wdtk.wikibaseapi.apierrors.MediaWikiApiErrorException;
 import java.util.*;
 
 
-public class WikidataTestService {
+public class WikidataService {
 
-    private static final Logger logger = LoggerFactory.getLogger(WikidataTestService.class);
+    private static final Logger logger = LoggerFactory.getLogger(WikidataService.class);
     private static final String serviceUrl = "https://query.wikidata.org/sparql";
 
     public WikidataObject getPremierLeagueTeams() {
@@ -23,6 +24,8 @@ public class WikidataTestService {
             Endpoint sp = new Endpoint(serviceUrl, false);
             WikidataObject rs = new WikidataObject("Premier league teams");
             rs.setUpFromEndpointResponse(sp.query(SparqlQueries.getTeamsInPremierLeague));
+            rs.changeRowType(2, WikidataClientObjectType.TIME);
+            rs.changeRowTypeForCustomLink(0, "/team?name=");
             return rs;
         } catch(EndpointException eex) {
             logger.error("Failed to get premier league teams", eex);

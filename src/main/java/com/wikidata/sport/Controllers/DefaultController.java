@@ -1,11 +1,11 @@
 package com.wikidata.sport.Controllers;
 
-import com.wikidata.sport.Model.Champions;
 import com.wikidata.sport.Model.WikidataObject;
-import com.wikidata.sport.Services.WikidataTestService;
+import com.wikidata.sport.Services.WikidataService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public class DefaultController {
     public String home(Model model) {
         //TODO a servicet majd be kell injektálni
         List<WikidataObject> respone = new ArrayList<>();
-        WikidataTestService test = new WikidataTestService();
+        WikidataService test = new WikidataService();
         respone.add(test.getPremierLeagueTeams());
         respone.add(test.getWinners());
         model.addAttribute("response", respone);
@@ -27,6 +27,18 @@ public class DefaultController {
     @GetMapping("/home")
     public String home1(Model model) {
         return home(model);
+    }
+
+    @GetMapping("/teams")
+    public String teams(Model model){
+        return "/teams";
+    }
+
+    @GetMapping("/team")
+    public String team(@RequestParam(name="name", required=true) String name, Model model){
+        //TODO implement wikidata search
+        model.addAttribute("team", name);
+        return "/team";
     }
 
     @GetMapping("/admin")

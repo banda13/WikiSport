@@ -23,7 +23,14 @@
             <tbody>
                 <tr th:each="row : ${table.rows}">
                     <div th:each="value : ${row}">
-                        <td th:text="${value}">&nbsp;</td>
+                        <div th:switch="${value.type.name()}">
+                            <div th:case="LINK">
+                                <td><a th:href="@{${value.linkInfo}}" th:text="${value.value}"></a></td>
+                            </div>
+                            <div th:case="*">
+                                <td th:text="${value.value}">&nbsp;</td>
+                            </div>
+                        </div>
                     </div>
                 </tr>
             </tbody>
@@ -39,6 +46,5 @@
 </div>
 
 <div th:replace="fragments/footer :: footer"/>
-
 </body>
 </html>
