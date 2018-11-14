@@ -24,6 +24,8 @@ public class WikidataService {
             Endpoint sp = new Endpoint(serviceUrl, false);
             WikidataObject rs = new WikidataObject("Premier league teams");
             rs.setUpFromEndpointResponse(sp.query(SparqlQueries.getTeamsInPremierLeague));
+
+            rs.setHeaders(Arrays.asList("Team", "Full name", "Inception", "Headquarter", "Home venue"));
             rs.changeRowType(2, WikidataClientObjectType.TIME);
             rs.changeRowTypeForCustomLink(0, "/team?name=");
             return rs;
@@ -38,6 +40,9 @@ public class WikidataService {
             Endpoint sp = new Endpoint(serviceUrl, false);
             WikidataObject rs = new WikidataObject("Champions");
             rs.setUpFromEndpointResponse(sp.query(SparqlQueries.getWinners));
+
+            rs.setHeaders(Arrays.asList("Championship", "Winner", "Games played"));
+            rs.changeRowTypeForCustomLink(1, "/team?name=");
             return rs;
         } catch(EndpointException eex) {
             logger.error("Failed to get premier league teams", eex);
@@ -45,31 +50,10 @@ public class WikidataService {
         }
     }
 
+
+
     public static void main(String [] args){
         //getPremierLeagueTeams();
     }
 
-    public void searchTest() throws MediaWikiApiErrorException {
-        WikibaseDataFetcher wbdf = WikibaseDataFetcher.getWikidataDataFetcher();
-        List<WbSearchEntitiesResult> results = wbdf.searchEntities("premier league");
-
-        for (WbSearchEntitiesResult result : results) {
-            logger.info(result.getTitle() + " " + result.getLabel());
-        }
-
-        EntityDocument q9448 = wbdf.getEntityDocument("Q9448");
-        if (q9448 instanceof ItemDocument) {
-            logger.info("The English name for entity Q9448 is "
-                    + ((ItemDocument) q9448).getLabels().get("en").getText());
-
-            Map<String, SiteLink> q998SiteLinks = ((ItemDocument) q9448).getSiteLinks();
-
-            for (Iterator<Statement> it = ((ItemDocument) q9448).getAllStatements(); it.hasNext(); ) {
-                Statement st = it.next();
-                logger.info(st.getClaim().getSubject().getSiteIri());
-                PropertyIdValue propQ4448 = st.getMainSnak().getPropertyId();
-                logger.info(propQ4448.getSiteIri() + propQ4448);
-            }
-        }
-    }
 }
