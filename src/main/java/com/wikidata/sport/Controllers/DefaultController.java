@@ -2,6 +2,7 @@ package com.wikidata.sport.Controllers;
 
 import com.wikidata.sport.Model.WikidataTableObject;
 import com.wikidata.sport.Services.WikidataService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,13 +15,14 @@ import java.util.Map;
 @Controller
 public class DefaultController {
 
+    @Autowired
+    private WikidataService service;
+
     @GetMapping("/")
     public String home(Model model) {
-        //TODO a servicet majd be kell injektálni
         List<WikidataTableObject> respone = new ArrayList<>();
-        WikidataService test = new WikidataService();
-        respone.add(test.getPremierLeagueTeams());
-        respone.add(test.getWinners());
+        respone.add(service.getPremierLeagueTeams());
+        respone.add(service.getWinners());
         model.addAttribute("response", respone);
         return "/home";
     }
@@ -37,10 +39,9 @@ public class DefaultController {
 
     @GetMapping("/team")
     public String team(@RequestParam(name="name", required=true) String name, Model model){
-        WikidataService test = new WikidataService();
-        Map<String, String> teamMapping = test.getIdsForTeams();
+        Map<String, String> teamMapping = service.getIdsForTeams();
         String teamId = teamMapping.get(name);
-        model.addAttribute("team", test.getDetailsForId(name, teamId));
+        model.addAttribute("team", service.getDetailsForId(name, teamId));
         return "/team";
     }
 
