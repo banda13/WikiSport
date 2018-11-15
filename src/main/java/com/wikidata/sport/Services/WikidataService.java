@@ -8,6 +8,7 @@ import com.wikidata.sport.Model.WikidataTableObject;
 import org.apache.jena.base.Sys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -75,6 +76,7 @@ public class WikidataService {
         }
     }
 
+    @Cacheable("team")
     public WikidataFormObject getDetailsForId(String name, String id){
         try {
             logger.info("Getting details for " + name + " with url " + id);
