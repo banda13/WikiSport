@@ -55,9 +55,12 @@ public class WikidataFormObject {
     public void setUpFromEndpointResponse(HashMap response){
         HashMap result = (HashMap) response.get("result");
         List<String> headers = (ArrayList<String>) result.get("variables");
-        HashMap<String, Object> row =  ((ArrayList<HashMap>) result.get("rows")).get(0);
-        for(String header : headers){
-            fields.put(header, new WikidataObject(row.get(header), WikidataClientObjectType.TEXT));
+        List<HashMap> rows = ((ArrayList<HashMap>) result.get("rows"));
+        if(rows.size() > 0) {
+            HashMap<String, Object> row = ((ArrayList<HashMap>) result.get("rows")).get(0);
+            for (String header : headers) {
+                fields.put(header, new WikidataObject(row.get(header), WikidataClientObjectType.TEXT));
+            }
         }
     }
 }

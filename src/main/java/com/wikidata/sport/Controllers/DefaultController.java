@@ -4,6 +4,8 @@ import com.wikidata.sport.Model.WikidataFormObject;
 import com.wikidata.sport.Model.WikidataObject;
 import com.wikidata.sport.Model.WikidataTableObject;
 import com.wikidata.sport.Services.WikidataService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,8 @@ import java.util.Map;
 
 @Controller
 public class DefaultController {
+
+    private static final Logger logger = LoggerFactory.getLogger(WikidataService.class);
 
     @Autowired
     private WikidataService service;
@@ -36,6 +40,7 @@ public class DefaultController {
 
     @GetMapping("/teams")
     public String teams(Model model) {
+        logger.info("Getting teams");
         List<WikidataFormObject> teams = new ArrayList<>();
         Map<String, String> teamMapping = service.getIdsForTeams();
         for (Map.Entry<String, String> entry : teamMapping.entrySet()) {
@@ -47,10 +52,16 @@ public class DefaultController {
 
     @GetMapping("/team")
     public String team(@RequestParam(name="name", required=true) String name, Model model){
+        logger.info("Getting details for " + name);
         Map<String, String> teamMapping = service.getIdsForTeams();
         String teamId = teamMapping.get(name);
         model.addAttribute("team", service.getDetailsForId(name, teamId));
         return "/team";
+    }
+
+    @GetMapping("/seasons")
+    public String seasons(){
+        return "/seasons";
     }
 
     @GetMapping("/admin")

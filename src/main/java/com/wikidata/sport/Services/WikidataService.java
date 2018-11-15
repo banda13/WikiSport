@@ -67,6 +67,7 @@ public class WikidataService {
             HashMap response = (HashMap) sp.query(SparqlQueries.getIdsForTeams).get("result");
             List<HashMap> rows = (List<HashMap>) response.get("rows");
             for(HashMap row : rows){
+                logger.info(row.get("teamLabel").toString() + " - " + row.get("team").toString());
                 result.put(row.get("teamLabel").toString(), row.get("team").toString());
             }
             return result;
