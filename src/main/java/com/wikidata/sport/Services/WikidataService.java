@@ -3,13 +3,11 @@ package com.wikidata.sport.Services;
 import com.bordercloud.sparql.Endpoint;
 import com.bordercloud.sparql.EndpointException;
 import com.wikidata.sport.Model.WikidataClientObjectType;
-import com.wikidata.sport.Model.WikidataObject;
+import com.wikidata.sport.Model.WikidataFormObject;
+import com.wikidata.sport.Model.WikidataTableObject;
+import org.apache.jena.base.Sys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wikidata.wdtk.datamodel.interfaces.*;
-import org.wikidata.wdtk.wikibaseapi.WbSearchEntitiesResult;
-import org.wikidata.wdtk.wikibaseapi.WikibaseDataFetcher;
-import org.wikidata.wdtk.wikibaseapi.apierrors.MediaWikiApiErrorException;
 
 import java.util.*;
 
@@ -19,14 +17,13 @@ public class WikidataService {
     private static final Logger logger = LoggerFactory.getLogger(WikidataService.class);
     private static final String serviceUrl = "https://query.wikidata.org/sparql";
 
-    public WikidataObject getPremierLeagueTeams() {
+    public WikidataTableObject getPremierLeagueTeams() {
         try {
             Endpoint sp = new Endpoint(serviceUrl, false);
-            WikidataObject rs = new WikidataObject("Premier league teams");
+            WikidataTableObject rs = new WikidataTableObject("Premier league teams");
             rs.setUpFromEndpointResponse(sp.query(SparqlQueries.getTeamsInPremierLeague));
 
-            rs.setHeaders(Arrays.asList("Team", "Full name", "Inception", "Headquarter", "Home venue"));
-            rs.changeRowType(2, WikidataClientObjectType.TIME);
+            rs.setHeaders(Arrays.asList("Team", "Full name", "Headquarter", "Home venue"));
             rs.changeRowTypeForCustomLink(0, "/team?name=");
             return rs;
         } catch(EndpointException eex) {
@@ -35,10 +32,10 @@ public class WikidataService {
         }
     }
 
-    public WikidataObject getWinners(){
+    public WikidataTableObject getWinners(){
         try {
             Endpoint sp = new Endpoint(serviceUrl, false);
-            WikidataObject rs = new WikidataObject("Champions");
+            WikidataTableObject rs = new WikidataTableObject("Champions");
             rs.setUpFromEndpointResponse(sp.query(SparqlQueries.getWinners));
 
             rs.setHeaders(Arrays.asList("Championship", "Winner", "Games played"));
@@ -61,7 +58,25 @@ public class WikidataService {
             }
             return result;
         } catch(EndpointException eex) {
-            logger.error("Failed to get premier league teams", eex);
+            logger.error("Failed to get ids for teams", eex);
+            return null;
+        }
+    }
+
+    public WikidataFormObject getDetailsForId(String name, String id){
+        try {
+            System.out.println(String.format(SparqlQueries.getTeamDetailsById, id));
+            Endpoint sp = new Endpoint(serviceUrl, false);
+            WikidataFormObject rs = new WikidataFormObject(name);
+            rs.setUpFromEndpointResponse(sp.query(String.format(SparqlQueries.getTeamDetailsById, id)));
+
+            rs.setHeaders(Arrays.asList("Inception", "Country", "Image", "Nickname", "Home venue", "Website", "Head coach", "Article", "League"));
+            rs.changeRowType("Article", WikidataClientObjectType.LINK);
+            rs.changeRowType("Website", WikidataClientObjectType.LINK);
+            rs.changeRowType("Image", WikidataClientObjectType.IMAGE);
+            return rs;
+        } catch(EndpointException eex) {
+            logger.error("Failed to get ids for teams", eex);
             return null;
         }
     }

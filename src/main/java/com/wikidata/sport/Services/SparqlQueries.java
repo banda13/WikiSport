@@ -1,8 +1,8 @@
 package com.wikidata.sport.Services;
 
-public class SparqlQueries {
+class SparqlQueries {
 
-    public static final String getTeamsInPremierLeague = "SELECT DISTINCT ?teamLabel ?hivatalos_n_v ?inception ?sz_khelyLabel ?hazai_stadion__sz_khely_Label WHERE {\n" +
+    public static final String getTeamsInPremierLeague = "SELECT DISTINCT ?teamLabel ?hivatalos_n_v ?sz_khelyLabel ?hazai_stadion__sz_khely_Label WHERE {\n" +
             "  ?team (wdt:P118/wdt:P279*) wd:Q9448.\n" +
             "  ?team (wdt:P31/wdt:P279*) wd:Q476028.\n" +
             "  ?team wdt:P17 wd:Q145.\n" +
@@ -28,4 +28,25 @@ public class SparqlQueries {
             "  ?team wdt:P17 wd:Q145.\n" +
             "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n" +
             "}";
+
+    public static String getTeamDetailsById = "SELECT DISTINCT ?article ?countryLabel ?imageLabel ?inceptionLabel ?nicknameLabel ?headcoachLabel ?leagueLabel ?homevenueLabel ?officalwebsiteLabel\n" +
+            "WHERE\n" +
+            "  { ?article  schema:about       ?item ;\n" +
+            "              schema:inLanguage  \"en\" ;\n" +
+            "              schema:isPartOf    <https://en.wikipedia.org/> .\n" +
+            "    OPTIONAL { ?item wdt:P17 ?country. }\n" +
+            "    OPTIONAL { ?item wdt:P18 ?image. }\n" +
+            "    OPTIONAL { ?item wdt:P571 ?inception. }\n" +
+            "    OPTIONAL { ?item wdt:P1449 ?nickname. }\n" +
+            "    OPTIONAL { ?item wdt:P286 ?headcoach. }\n" +
+            "    OPTIONAL { ?item wdt:P118 ?league. }\n" +
+            "    OPTIONAL { ?item wdt:P115 ?homevenue. }\n" +
+            "    OPTIONAL { ?item wdt:P856 ?officalwebsite. }\n" +
+            "    FILTER ( ?item = <%s> )    \n" +
+            "    SERVICE wikibase:label\n" +
+            "      { bd:serviceParam\n" +
+            "                  wikibase:language  \"en\"\n" +
+            "      }\n" +
+            "  }\n" +
+            "";
 }
