@@ -11,12 +11,13 @@
 <div class="container">
     <div>
         <div th:each="table : ${response}">
-            <h2 th:text="${table.title}">&nbsp;</h2>
-            <table class="table table-bordered table-hover table-responsive">
+            <h3 th:text="${table.title}">&nbsp;</h3>
+            <div class="panel panel-default">
+            <table class="table table-hover table-striped">
             <thead>
                 <tr>
                     <div th:each="header : ${table.headers}">
-                        <th th:text="${header}">&nbsp;</th>
+                        <th scope="row" th:text="${header}">&nbsp;</th>
                     </div>
                 </tr>
             </thead>
@@ -35,6 +36,7 @@
                 </tr>
             </tbody>
             </table>
+            </div>
         </div>
     </div>
     <div class="starter-template">

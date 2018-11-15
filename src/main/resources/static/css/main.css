@@ -1,11 +1,12 @@
-h1{
-	color:#0000FF;
-}
-
-h2{
-	color:#FF0000;
-}
-
 footer{
     margin-top:60px;
+}
+.table .thead-light th {
+
+   color: #fff;
+
+   background-color: #000000;
+
+   border-color: #FF8888;
+
 }

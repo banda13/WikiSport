@@ -1,5 +1,7 @@
 package com.wikidata.sport.Controllers;
 
+import com.wikidata.sport.Model.WikidataFormObject;
+import com.wikidata.sport.Model.WikidataObject;
 import com.wikidata.sport.Model.WikidataTableObject;
 import com.wikidata.sport.Services.WikidataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +22,10 @@ public class DefaultController {
 
     @GetMapping("/")
     public String home(Model model) {
-        List<WikidataTableObject> respone = new ArrayList<>();
-        respone.add(service.getPremierLeagueTeams());
-        respone.add(service.getWinners());
-        model.addAttribute("response", respone);
+        List<WikidataTableObject> response = new ArrayList<>();
+        response.add(service.getPremierLeagueTeams());
+        response.add(service.getWinners());
+        model.addAttribute("response", response);
         return "/home";
     }
 
@@ -34,6 +36,13 @@ public class DefaultController {
 
     @GetMapping("/teams")
     public String teams(Model model){
+        List<WikidataFormObject> teams = new ArrayList<>();
+        Map<String, String> teamMapping = service.getIdsForTeams();
+        for (Map.Entry<String, String> entry : teamMapping.entrySet()){
+            teams.add(service.getDetailsForId(entry.getKey(), entry.getValue()));
+            model.addAttribute("teams", teams);
+            return "/teams";
+        }
         return "/teams";
     }
 

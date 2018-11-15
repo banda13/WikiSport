@@ -7,8 +7,29 @@
 <body>
     <div th:replace="fragments/header :: header"/>
 
-    <div class="container">
-        <p>teams</p>
+    <div class="container-fluid">
+        <div class="row content">
+            <div class="col-sm-2 sidenav"></div>
+            <div class="col-sm-8 text-left">
+                <div th:each="team : ${teams}" class="well">
+                <h2 th:text="${team.title}">&nbsp;</h2>
+                <div th:each="instance : ${team.fields}">
+                    <div th:switch="${instance.value.type.name()}">
+                        <div th:case="LINK" th:if="${instance.value.value != null}">
+                            <td><h4 th:text="${instance.key}"></h4><a th:href="@{${instance.value.linkInfo}}" th:text="${instance.value.value}"></a></td>
+                        </div>
+                        <div th:case="IMAGE" th:if="${instance.value.value != null}">
+                            <td><h4 th:text="${instance.key}"></h4><img th:src="@{${instance.value.value}}" height="300" width="500" /></td>
+                        </div>
+                        <div th:case="*" th:if="${instance.value.value != null}">
+                            <td><h4 th:text="${instance.key}"></h4><p th:text="${instance.value.value}"></p></td>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="col-sm-2 sidenav"></div>
+        </div>
     </div>
 
     <div th:replace="fragments/footer :: footer"></div>
