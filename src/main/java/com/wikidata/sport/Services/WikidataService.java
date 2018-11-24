@@ -12,12 +12,38 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class WikidataService {
 
     private static final Logger logger = LoggerFactory.getLogger(WikidataService.class);
     private static final String serviceUrl = "https://query.wikidata.org/sparql";
+    private static final Map<String,String> nameMap =
+            Arrays.stream(new Object[][]{
+                    {"Watford F.C.", "WAT"},
+                    {"Everton F.C.", "EVE"},
+                    {"Chelsea F.C.", "CHE"},
+                    {"Arsenal F.C.", "ARS"},
+                    {"Manchester United F.C.", "MUN"},
+                    {"Middlesbrough F.C.", "MID"},
+                    {"Cardiff City F.C.", "CAR"},
+                    {"Newcastle United F.C.", "NEW"},
+                    {"Southampton F.C.", "SOU"},
+                    {"Stoke City F.C.", "STK"},
+                    {"Tottenham Hotspur F.C.", "TOT"},
+                    {"West Ham United F.C.", "WHU"},
+                    {"Brighton & Hove Albion F.C.", "BRI"},
+                    {"Burnley F.C.", "BUR"},
+                    {"Crystal Palace F.C.", "CRY"},
+                    {"Huddersfield Town A.F.C.", "HUD"},
+                    {"Leicester City F.C.", "LEI"},
+                    {"Wolverhampton Wanderers F.C.", "WOL"},
+                    {"AFC Bournemouth", "BOU"},
+                    {"Tranmere Rovers F.C.", "TRA"},
+                    {"Manchester City F.C.", "MCI"},
+                    {"Liverpool F.C.", "LIV"}
+            }).collect(Collectors.toMap(kv -> (String) kv[0], kv -> (String) kv[1]));
 
     public WikidataService(){
         logger.info("Wikidata service initialized");
@@ -39,6 +65,79 @@ public class WikidataService {
             logger.error("Failed to get premier league teams", eex);
             return null;
         }
+    }
+    public WikidataTableObject getDiagonalScoreTable() {
+        try {
+            logger.info("Getting teams");
+            Endpoint sp = new Endpoint(serviceUrl, false);
+
+            HashMap hashMap = sp.query(SparqlQueries.getOnlyNames);
+            List<String> headers = getHeaders(hashMap,30);
+
+            WikidataTableObject rs = new WikidataTableObject("Premier league matches");
+
+            HashMap extendedMapForScores = getExtendedScoreMap(hashMap);
+            rs.setUpFromEndpointResponse(extendedMapForScores);
+
+            rs.setHeaders(headers);
+            rs.changeRowTypeForCustomLink(0, "/team?name=");
+
+            return rs;
+        } catch(EndpointException eex) {
+            logger.error("Failed to get premier league teams", eex);
+            return null;
+        }
+    }
+
+    private HashMap getExtendedScoreMap(HashMap hashMap) {
+        HashMap result = (HashMap) hashMap.get("result");
+        ArrayList<HashMap> resultRows = (ArrayList<HashMap>) result.get("rows");
+        int countRows = resultRows.size();
+        ArrayList<String> headers = (ArrayList<String>) result.get("variables");
+        System.out.print("\n count: " + countRows);
+
+        int index = -1;
+        for (HashMap<String, Object> row : (ArrayList<HashMap>) result.get("rows")) {
+            index++;
+            String addable = nameMap.get(row.get("teamLabel").toString());
+            row.put(addable, "-");
+            headers.add(addable);
+
+            resultRows.set(index,row);
+        }
+
+        ((HashMap) hashMap.get("result")).put("rows",resultRows);
+        return hashMap;
+    }
+
+
+    public List<String> getHeaders(HashMap rs , int size) {
+
+        List<String> headers = new ArrayList<>();
+        headers.add("Home \\ Away");
+        System.out.print("\n");
+        HashMap result = (HashMap) rs.get("result");
+        List<String> variables = (ArrayList<String>) result.get("variables");
+        for (String variable : variables) {
+            System.out.print(String.format("%-" + size + "." + size + "s", variable) + " | ");
+        }
+        System.out.print("\n");
+        for (HashMap<String, Object> row : (ArrayList<HashMap>) result.get("rows")) {
+
+            for (String variable : variables) {
+                //System.out.println(value.get(variable));
+
+                if(variable.equals("teamLabel")) {
+                    System.out.print(String.format("%-" + size + "." + size + "s", row.get(variable)) + " | ");
+                    String addable = nameMap.get(row.get(variable).toString());
+                    headers.add(addable);
+                }
+            }
+            System.out.print("\n");
+        }
+
+        System.out.print("\n headerscount: " + headers.size());
+        return headers;
     }
 
     public WikidataTableObject getWinners(){

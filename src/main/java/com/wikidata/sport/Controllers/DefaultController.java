@@ -27,8 +27,10 @@ public class DefaultController {
     @GetMapping("/")
     public String home(Model model) {
         List<WikidataTableObject> response = new ArrayList<>();
+
         response.add(service.getPremierLeagueTeams());
         response.add(service.getWinners());
+        response.add(service.getDiagonalScoreTable());
         model.addAttribute("response", response);
         return "/home";
     }

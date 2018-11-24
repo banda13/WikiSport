@@ -8,6 +8,16 @@ public class WikidataTableObject {
 
     private List<String> headers = new ArrayList<>();
 
+    public List<String> getRowHeaders() {
+        return rowHeaders;
+    }
+
+    public void setRowHeaders(List<String> rowHeaders) {
+        this.rowHeaders = rowHeaders;
+    }
+
+    private List<String> rowHeaders = new ArrayList<>();
+
     private List<List<WikidataObject>> rows = new ArrayList<>();
 
     public WikidataTableObject() {
@@ -76,4 +86,6 @@ public class WikidataTableObject {
             rows.add(values);
         }
     }
+
+
 }
