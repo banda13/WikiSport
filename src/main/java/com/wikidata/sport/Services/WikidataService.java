@@ -218,6 +218,21 @@ public class WikidataService {
         }
     }
 
+    public WikidataTableObject getMatchResults(){
+        try {
+            logger.info("Getting inserted match results");
+            Endpoint sp = new Endpoint(serviceUrl, false);
+            WikidataTableObject rs = new WikidataTableObject("Match results");
+            rs.setUpFromEndpointResponse(sp.query(SparqlQueries.getMatchResults));
+
+            rs.setHeaders(Arrays.asList("Match", "Result", "Winner"));
+            return rs;
+        } catch(EndpointException eex) {
+            logger.error("Failed to get premier league teams", eex);
+            return null;
+        }
+    }
+
     @Cacheable("ids")
     public Map<String, String> getIdsForTeams(){
         try {
@@ -314,35 +329,5 @@ public class WikidataService {
     }
 
 
-    public static void main(String [] args) throws MediaWikiApiErrorException, IOException, LoginFailedException {
-        PropertyIdValue stringProperty1;
-        ItemIdValue noid = ItemIdValue.NULL;
-        WikibaseDataFetcher wbdf = WikibaseDataFetcher.getWikidataDataFetcher();
-        PropertyIdValue instanceOfStatement = ((PropertyDocument) wbdf.getEntityDocument("P31")).getEntityId();
-
-        Statement statement1 = StatementBuilder
-                .forSubjectAndProperty(noid, instanceOfStatement)
-                .withValue(Datamodel.makeWikidataItemIdValue("Q16466010")).build();
-        ApiConnection connection = ApiConnection.getWikidataApiConnection();
-        connection.login("szabag", "wikipass111");
-        if(!connection.isLoggedIn()){
-            return;
-        }
-        WikibaseDataEditor wbde = new WikibaseDataEditor(connection, siteIri);
-        ItemDocument itemDocument = ItemDocumentBuilder.forItemId(noid)
-                .withLabel("football match", "en").withStatement(statement1)
-                .build();
-
-        ItemDocument newItemDocument = wbde.createItemDocument(itemDocument,
-                "Wikidata Toolkit example test item creation");
-
-        ItemIdValue newItemId = newItemDocument.getEntityId();
-        System.out.println("*** Successfully created a new item "
-                + newItemId.getId()
-                + " (see https://wikidata.org/w/index.php?title="
-                + newItemId.getId() + "&oldid="
-                + newItemDocument.getRevisionId() + " for this version)");
-
-    }
 
 }

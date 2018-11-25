@@ -46,6 +46,7 @@ public class DefaultController {
         response.add(service.getWinners());
         response.add(service.getDiagonalScoreTable());
         response.add(service.getStandings());
+        response.add(service.getMatchResults());
         model.addAttribute("response", response);
         return "/home";
     }
