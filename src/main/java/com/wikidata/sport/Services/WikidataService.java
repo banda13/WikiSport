@@ -5,7 +5,6 @@ import com.bordercloud.sparql.EndpointException;
 import com.wikidata.sport.Model.WikidataClientObjectType;
 import com.wikidata.sport.Model.WikidataFormObject;
 import com.wikidata.sport.Model.WikidataTableObject;
-import org.apache.jena.base.Sys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -74,9 +73,9 @@ public class WikidataService {
 
             HashMap hashMap = sp.query(SparqlQueries.get2018_19Names);
 
-            List<String> headers = getHeaders(hashMap,30);
+            List<String> headers = getHeadersForDiagonalMatrix(hashMap,30);
 
-            WikidataTableObject rs = new WikidataTableObject("Premier league matches");
+            WikidataTableObject rs = new WikidataTableObject("2018-19 Premier league matches");
 
             HashMap extendedMapForScores = getExtendedScoreMap(hashMap);
             rs.setUpFromEndpointResponse(extendedMapForScores);
@@ -113,7 +112,7 @@ public class WikidataService {
     }
 
 
-    public List<String> getHeaders(HashMap rs , int size) {
+    public List<String> getHeadersForDiagonalMatrix(HashMap rs , int size) {
 
         List<String> headers = new ArrayList<>();
         headers.add("Home \\ Away");
@@ -139,6 +138,53 @@ public class WikidataService {
 
         System.out.print("\n headerscount: " + headers.size());
         return headers;
+    }
+
+    public WikidataTableObject getStandings() {
+        try {
+            logger.info("Getting teams");
+            Endpoint sp = new Endpoint(serviceUrl, false);
+
+            HashMap hashMap = sp.query(SparqlQueries.getStandings);
+
+            WikidataTableObject rs = new WikidataTableObject("2018-19 Premier league standing");
+
+            HashMap extendedMapForScores = getStandingTableMap(hashMap);
+            rs.setUpFromEndpointResponse(extendedMapForScores);
+
+            rs.setHeaders(Arrays.asList("Place", "Team", "Match", "W", "D", "L", "Points", "Description"));
+            rs.changeRowTypeForCustomLink(1, "/team?name=");
+
+            return rs;
+        } catch(EndpointException eex) {
+            logger.error("Failed to get premier league teams", eex);
+            return null;
+        }
+    }
+
+    private HashMap getStandingTableMap(HashMap hashMap) {
+        HashMap result = (HashMap) hashMap.get("result");
+        ArrayList<String> headers = (ArrayList<String>) result.get("variables");
+        int countRows = ((ArrayList<HashMap>) result.get("rows")).size();
+        int index = 0;
+        for (HashMap<String, Object> row : (ArrayList<HashMap>) result.get("rows")) {
+            index++;
+
+            for (String variable : headers) {
+                if(variable.equals("place")) {
+                    row.put("place",Integer.toString(index));
+                }
+                if(variable.equals("description")){
+                    if(index >=1 && index <=4)
+                        row.put("description", "Bajnokok Ligája-csoportkör");
+                    if(index==5)
+                        row.put("description", "Európa-liga-csoportkör");
+                    if(index>countRows-3)
+                        row.put("description", "Kiesik az EFL Championshipbe");
+                }
+            }
+        }
+        return hashMap;
     }
 
     public WikidataTableObject getWinners(){

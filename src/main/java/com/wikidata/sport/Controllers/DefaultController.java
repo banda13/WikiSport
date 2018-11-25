@@ -31,6 +31,7 @@ public class DefaultController {
         response.add(service.getPremierLeagueTeams());
         response.add(service.getWinners());
         response.add(service.getDiagonalScoreTable());
+        response.add(service.getStandings());
         model.addAttribute("response", response);
         return "/home";
     }

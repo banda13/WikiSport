@@ -14,17 +14,17 @@ class SparqlQueries {
             "}\n" +
             "ORDER BY ?Name";
 
-    public static final String getOnlyNames = "SELECT DISTINCT ?teamLabel  WHERE {\n" +
-            "  ?team (wdt:P118/wdt:P279*) wd:Q9448.\n" +
-            "  ?team (wdt:P31/wdt:P279*) wd:Q476028.\n" +
+    public static final String getStandings = "SELECT DISTINCT (1 as ?place) ?teamName (0 as ?matchPlayed) (0 as ?win) (0 as ?draw) (0 as ?lose) (0 as ?points) ('' as ?description) WHERE {\n" +
+            "  ?team wdt:P3450 wd:Q9448.\n" +
+            "  ?team wdt:P31 wd:Q27020041.\n" +
             "  ?team wdt:P17 wd:Q145.\n" +
-            "  OPTIONAL { ?team wdt:P571 ?inception. }\n" +
-            "  OPTIONAL { ?team wdt:P1448 ?hivatalos_n_v. }\n" +
-            "  OPTIONAL { ?team wdt:P159 ?sz_khely. }\n" +
-            "  OPTIONAL { ?team wdt:P115 ?hazai_stadion__sz_khely_. }\n" +
+            "  ?team wdt:P2348 wd:Q52394608.\n" +
+            "  ?team wdt:P1923 ?participating.\n" +
+            "  OPTIONAL { ?participating rdfs:label ?teamName.\n" +
+            "             FILTER(LANG(?teamName) = \"en\").}\n" +
             "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n" +
             "}\n" +
-            "ORDER BY ?Name";
+            "ORDER BY ?teamName";
 
     public static final String get2018_19Names = "SELECT DISTINCT ?teamName WHERE {\n" +
             "  ?team wdt:P3450 wd:Q9448.\n" +
