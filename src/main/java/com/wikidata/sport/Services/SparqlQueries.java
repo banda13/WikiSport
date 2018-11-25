@@ -74,11 +74,15 @@ class SparqlQueries {
             "  }\n" +
             "";
 
-    public static String getMatchResults = "SELECT ?matchLabel ?matchDescription ?nyertesLabel WHERE {\n" +
-            "              ?match wdt:P31 wd:Q16466010.\n" +
-            "              ?match wdt:P361 wd:Q52394608.\n" +
-            "              SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n" +
-            "              OPTIONAL { ?match wdt:P1346 ?nyertes. }\n" +
-            "            }\n" +
-            "            ORDER BY ?match";
+    public static String getMatchResults = "SELECT ?matchLabel ?matchDescription ?nyertesLabel (GROUP_CONCAT(DISTINCT ?teamName;separator=\",\") AS ?teams) WHERE {\n" +
+            "  ?match wdt:P31 wd:Q16466010.\n" +
+            "  ?match wdt:P361 wd:Q52394608.\n" +
+            "  ?match wdt:P710 ?participating.\n" +
+            "  OPTIONAL { ?participating rdfs:label ?teamName.\n" +
+            "             FILTER(LANG(?teamName) = \"en\").}\n" +
+            "  OPTIONAL { ?match wdt:P1346 ?nyertes. }\n" +
+            "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n" +
+            "}\n" +
+            "GROUP BY ?matchLabel ?matchDescription ?nyertesLabel\n" +
+            "ORDER BY ?match";
 }

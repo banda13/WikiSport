@@ -52,6 +52,12 @@ public class WikidataTableObject {
         this.rows = rows;
     }
 
+    public HashMap getResponse() {
+        return response;
+    }
+
+    private HashMap response = new HashMap();
+
     public void changeRowType(int rowIndex, WikidataClientObjectType newType){
         for(List<WikidataObject> row : rows){
             for(int i = 0; i < row.size(); i++){
@@ -76,6 +82,7 @@ public class WikidataTableObject {
     }
 
     public void setUpFromEndpointResponse(HashMap response){
+        this.response = response;
         HashMap result = (HashMap) response.get("result");
         headers = (ArrayList<String>) result.get("variables");
         for(HashMap<String, Object> row : (ArrayList<HashMap>) result.get("rows")){

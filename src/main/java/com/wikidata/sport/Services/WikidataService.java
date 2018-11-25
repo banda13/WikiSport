@@ -94,7 +94,7 @@ public class WikidataService {
             return null;
         }
     }
-    public WikidataTableObject getDiagonalScoreTable() {
+    public WikidataTableObject getDiagonalScoreTable(HashMap responseMatches) {
         try {
             logger.info("Getting teams");
             Endpoint sp = new Endpoint(serviceUrl, false);
@@ -105,7 +105,7 @@ public class WikidataService {
 
             WikidataTableObject rs = new WikidataTableObject("2018-19 Premier league matches");
 
-            HashMap extendedMapForScores = getExtendedScoreMap(hashMap);
+            HashMap extendedMapForScores = getExtendedScoreMap(hashMap,responseMatches);
             rs.setUpFromEndpointResponse(extendedMapForScores);
 
             rs.setHeaders(headers);
@@ -118,7 +118,7 @@ public class WikidataService {
         }
     }
 
-    private HashMap getExtendedScoreMap(HashMap hashMap) {
+    private HashMap getExtendedScoreMap(HashMap hashMap, HashMap responseMatches) {
         HashMap result = (HashMap) hashMap.get("result");
         ArrayList<HashMap> resultRows = (ArrayList<HashMap>) result.get("rows");
         int countRows = resultRows.size();
@@ -136,7 +136,53 @@ public class WikidataService {
         }
 
         ((HashMap) hashMap.get("result")).put("rows",resultRows);
+
+
+        for (HashMap<String, Object> row : (ArrayList<HashMap>) ((HashMap)hashMap.get("result")).get("rows")) {
+            Map<String,String> cellFillMatch = new HashMap<>();
+
+            for (HashMap<String, Object> response : (ArrayList<HashMap>) ((HashMap)responseMatches.get("result")).get("rows")) {
+
+                List<String> participatingTeams = Arrays.asList(((String) response.get("teams")).split(","));
+                if(participatingTeams.contains(row.get(TEAM_NAME).toString())){
+
+                    String matchLabel = (String) response.get("matchLabel");
+
+                    String matchDescription = (String) response.get("matchDescription");
+                    if(!matchLabel.startsWith(row.get(TEAM_NAME).toString())){
+                        matchDescription = new StringBuilder(matchDescription).reverse().toString();
+                    }
+
+                    String otherTeam = null;
+                    for (String var: participatingTeams) {
+                        if(!var.equals(row.get(TEAM_NAME).toString())){
+                            otherTeam = var;
+
+                        }
+                    }
+                    cellFillMatch.put(otherTeam,matchDescription);
+                }
+            }
+            if(!cellFillMatch.isEmpty()) {
+                for (int i = 1; i <= countRows; i++) {
+                    String head = headers.get(i);
+                    String origin = getKeyFromValue(nameMap, head);
+                    if(cellFillMatch.containsKey(origin)){
+                        row.put(head,cellFillMatch.get(origin));
+                    }
+                }
+            }
+        }
         return hashMap;
+    }
+
+    public static String getKeyFromValue(Map<String,String> hm, String value) {
+        for (String o : hm.keySet()) {
+            if (hm.get(o).equals(value)) {
+                return o;
+            }
+        }
+        return null;
     }
 
 
@@ -168,7 +214,7 @@ public class WikidataService {
         return headers;
     }
 
-    public WikidataTableObject getStandings() {
+    public WikidataTableObject getStandings(HashMap responseMatches) {
         try {
             logger.info("Getting teams");
             Endpoint sp = new Endpoint(serviceUrl, false);
@@ -177,7 +223,7 @@ public class WikidataService {
 
             WikidataTableObject rs = new WikidataTableObject("2018-19 Premier league standing");
 
-            HashMap extendedMapForScores = getStandingTableMap(hashMap);
+            HashMap extendedMapForScores = getStandingTableMap(hashMap,responseMatches);
             rs.setUpFromEndpointResponse(extendedMapForScores);
 
             rs.setHeaders(Arrays.asList("Place", "Team", "Match", "W", "D", "L", "Points", "Description"));
@@ -190,9 +236,49 @@ public class WikidataService {
         }
     }
 
-    private HashMap getStandingTableMap(HashMap hashMap) {
+    private HashMap getStandingTableMap(HashMap hashMap, HashMap responseMatches) {
         HashMap result = (HashMap) hashMap.get("result");
         ArrayList<String> headers = (ArrayList<String>) result.get("variables");
+
+        for (HashMap<String, Object> row : (ArrayList<HashMap>) ((HashMap)hashMap.get("result")).get("rows")) {
+
+            int allGames=0;
+            int win = 0;
+            int lose = 0;
+            int draw = 0;
+            int points = 0;
+            for (HashMap<String, Object> response : (ArrayList<HashMap>) ((HashMap)responseMatches.get("result")).get("rows")) {
+
+                List<String> participatingTeams = Arrays.asList(((String) response.get("teams")).split(","));
+                if(participatingTeams.contains(row.get(TEAM_NAME).toString())){
+                    allGames++;
+
+                    String nyertesLabel = (String) response.get("nyertesLabel");
+
+                    if(nyertesLabel.equals(row.get(TEAM_NAME).toString())){
+                        win++;
+                    } else if (nyertesLabel.equals("draw")){
+                        draw++;
+                    } else {
+                        lose ++;
+                    }
+                }
+            }
+            points = win*3 + draw;
+            row.put("matchPlayed",Integer.toString(allGames));
+            row.put("win",Integer.toString(win));
+            row.put("draw",Integer.toString(draw));
+            row.put("lose",Integer.toString(lose));
+            row.put("points",points);
+
+        }
+
+        Collections.sort((ArrayList<HashMap<String, Object>>)  ((HashMap)hashMap.get("result")).get("rows"), new Comparator<HashMap<String, Object>>(){
+            public int compare(HashMap<String, Object> one, HashMap<String, Object> two) {
+                return one.get("points").toString().compareTo(two.get("points").toString());
+            }
+        });
+
         int countRows = ((ArrayList<HashMap>) result.get("rows")).size();
         int index = 0;
         for (HashMap<String, Object> row : (ArrayList<HashMap>) result.get("rows")) {
@@ -240,7 +326,7 @@ public class WikidataService {
             WikidataTableObject rs = new WikidataTableObject("Match results");
             rs.setUpFromEndpointResponse(sp.query(SparqlQueries.getMatchResults));
 
-            rs.setHeaders(Arrays.asList("Match", "Result", "Winner"));
+            rs.setHeaders(Arrays.asList("Match", "Result", "Winner", "Participating teams"));
             return rs;
         } catch(EndpointException eex) {
             logger.error("Failed to get premier league teams", eex);

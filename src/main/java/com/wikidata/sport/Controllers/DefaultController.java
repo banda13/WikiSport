@@ -42,11 +42,15 @@ public class DefaultController {
     public String home(Model model) {
         List<WikidataTableObject> response = new ArrayList<>();
 
+
         response.add(service.getPremierLeagueTeams());
         response.add(service.getWinners());
-        response.add(service.getDiagonalScoreTable());
-        response.add(service.getStandings());
-        response.add(service.getMatchResults());
+        WikidataTableObject matchResults = service.getMatchResults();
+        WikidataTableObject diagonalMatrix = service.getDiagonalScoreTable(matchResults.getResponse());
+        WikidataTableObject standingsTable = service.getStandings(matchResults.getResponse());
+        response.add(diagonalMatrix);
+        response.add(standingsTable);
+        response.add(matchResults);
         model.addAttribute("response", response);
         return "/home";
     }
