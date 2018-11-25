@@ -19,6 +19,7 @@ import org.wikidata.wdtk.datamodel.helpers.EntityDocumentBuilder;
 import org.wikidata.wdtk.datamodel.helpers.StatementBuilder;
 import org.wikidata.wdtk.datamodel.interfaces.*;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
+import org.wikidata.wdtk.wikibaseapi.LoginFailedException;
 import org.wikidata.wdtk.wikibaseapi.WikibaseDataEditor;
 import org.wikidata.wdtk.wikibaseapi.WikibaseDataFetcher;
 import org.wikidata.wdtk.wikibaseapi.apierrors.MediaWikiApiErrorException;
@@ -83,8 +84,13 @@ public class DefaultController {
     }
 
     @PostMapping("/create")
-    public String insert_post(@ModelAttribute Match newMatch, Model model){
-        logger.info(newMatch.getTeam1() + " " + newMatch.getTeam2());
+    public String insert_post(@ModelAttribute Match newMatch, Model model) throws MediaWikiApiErrorException, IOException, LoginFailedException {
+        logger.info("Creating new match started");
+        Map<String, String> teamMapping = service.getIdsForTeams();
+        newMatch.setTeam1Id(teamMapping.get(newMatch.getTeam1()));
+        newMatch.setTeam2Id(teamMapping.get(newMatch.getTeam2()));
+
+        newMatch = service.createNewMatch(newMatch);
         model.addAttribute("newMatch", newMatch);
         return "/insert_result";
     }

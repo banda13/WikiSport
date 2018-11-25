@@ -17,6 +17,8 @@
         <p th:text="'Team 2: ' + ${newMatch.team2}" />
         <p th:text="'Score: ' + ${newMatch.team1Goals} + ' - ' + ${newMatch.team2Goals}" />
         <p th:text="'Date: ' + ${newMatch.matchDate}" />
+        <a th:href="'https://www.wikidata.org/wiki/' + @{${newMatch.wikidataId}}" th:text="${newMatch.team1} + ' vs ' + ${newMatch.team2}" ></a>
+        <p></p>
         <a href="/insert">Create new match</a>
     </div>
 </div>

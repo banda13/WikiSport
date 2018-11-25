@@ -1,5 +1,6 @@
 package com.wikidata.sport.Model;
 
+import com.wikidata.sport.Services.WikidataConsts;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
@@ -9,6 +10,14 @@ public class Match {
     private String team1;
 
     private String team2;
+
+    private String team1Id;
+
+    private String team2Id;
+
+    private String winner;
+
+    private String winnerId;
 
     private int team1Goals;
 
@@ -36,6 +45,22 @@ public class Match {
 
     public void setTeam2(String team2) {
         this.team2 = team2;
+    }
+
+    public String getTeam1Id() {
+        return team1Id;
+    }
+
+    public void setTeam1Id(String team1Id) {
+        this.team1Id = team1Id.substring(team1Id.lastIndexOf("/") + 1);
+    }
+
+    public String getTeam2Id() {
+        return team2Id;
+    }
+
+    public void setTeam2Id(String team2Id) {
+        this.team2Id = team2Id.substring(team2Id.lastIndexOf("/") + 1);
     }
 
     public int getTeam1Goals() {
@@ -68,5 +93,29 @@ public class Match {
 
     public void setWikidataId(String wikidataId) {
         this.wikidataId = wikidataId;
+    }
+
+    public String getWinner() {
+        if(team1Goals >team2Goals){
+            return team1;
+        }
+        else if(team2Goals > team1Goals){
+            return team2;
+        }
+        else{
+            return "Draw";
+        }
+    }
+
+    public String getWinnerId() {
+        if(team1Goals >team2Goals){
+            return team1Id;
+        }
+        else if(team2Goals > team1Goals){
+            return team2Id;
+        }
+        else{
+            return WikidataConsts.DRAW;
+        }
     }
 }

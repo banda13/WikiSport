@@ -2,6 +2,7 @@ package com.wikidata.sport.Services;
 
 import com.bordercloud.sparql.Endpoint;
 import com.bordercloud.sparql.EndpointException;
+import com.wikidata.sport.Model.Match;
 import com.wikidata.sport.Model.WikidataClientObjectType;
 import com.wikidata.sport.Model.WikidataFormObject;
 import com.wikidata.sport.Model.WikidataTableObject;
@@ -9,7 +10,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.wikidata.wdtk.datamodel.helpers.Datamodel;
+import org.wikidata.wdtk.datamodel.helpers.ItemDocumentBuilder;
+import org.wikidata.wdtk.datamodel.helpers.StatementBuilder;
+import org.wikidata.wdtk.datamodel.interfaces.*;
+import org.wikidata.wdtk.wikibaseapi.ApiConnection;
+import org.wikidata.wdtk.wikibaseapi.LoginFailedException;
+import org.wikidata.wdtk.wikibaseapi.WikibaseDataEditor;
+import org.wikidata.wdtk.wikibaseapi.WikibaseDataFetcher;
+import org.wikidata.wdtk.wikibaseapi.apierrors.MediaWikiApiErrorException;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,6 +30,7 @@ public class WikidataService {
 
     private static final Logger logger = LoggerFactory.getLogger(WikidataService.class);
     private static final String serviceUrl = "https://query.wikidata.org/sparql";
+    private static final String siteIri = "http://www.wikidata.org/entity/";
     private static final Map<String,String> nameMap =
             Arrays.stream(new Object[][]{
                     {"Watford F.C.", "WAT"},
@@ -205,6 +218,7 @@ public class WikidataService {
         }
     }
 
+    @Cacheable("ids")
     public Map<String, String> getIdsForTeams(){
         try {
             logger.info("Resolving id's for teams");
@@ -242,8 +256,93 @@ public class WikidataService {
         }
     }
 
-    public static void main(String [] args){
-        //getIdsForTeams();
+    public Match createNewMatch(Match match) throws MediaWikiApiErrorException, LoginFailedException, IOException {
+        logger.info("Creating new match: " + match.getTeam1() + " vs " + match.getTeam2());
+
+        ItemIdValue noid = ItemIdValue.NULL;
+        WikibaseDataFetcher wbdf = WikibaseDataFetcher.getWikidataDataFetcher();
+        PropertyIdValue instanceOfStatement = ((PropertyDocument) wbdf.getEntityDocument("P31")).getEntityId();
+        PropertyIdValue partOfStatement = ((PropertyDocument) wbdf.getEntityDocument("P361")).getEntityId();
+        PropertyIdValue participant1Statement = ((PropertyDocument) wbdf.getEntityDocument("P710")).getEntityId();
+        PropertyIdValue participant2Statement = ((PropertyDocument) wbdf.getEntityDocument("P710")).getEntityId();
+
+        PropertyIdValue winnerStatement = ((PropertyDocument) wbdf.getEntityDocument("P1346")).getEntityId();
+
+        Statement statement1 = StatementBuilder
+                .forSubjectAndProperty(noid, instanceOfStatement)
+                .withValue(Datamodel.makeWikidataItemIdValue(WikidataConsts.ASSOSIATIONFOOTBALLMATCH)).build();
+        Statement statement2 = StatementBuilder
+                .forSubjectAndProperty(noid, partOfStatement)
+                .withValue(Datamodel.makeWikidataItemIdValue(WikidataConsts.PREMIERLEAGUE)).build();
+
+        Statement statement3 = StatementBuilder
+                .forSubjectAndProperty(noid, participant1Statement)
+                .withValue(Datamodel.makeWikidataItemIdValue(match.getTeam1Id())).build();
+        Statement statement4 = StatementBuilder
+                .forSubjectAndProperty(noid, participant2Statement)
+                .withValue(Datamodel.makeWikidataItemIdValue(match.getTeam2Id())).build();
+        Statement statement5 = StatementBuilder
+                .forSubjectAndProperty(noid, winnerStatement)
+                .withValue(Datamodel.makeWikidataItemIdValue(match.getWinnerId())).build();
+
+        String label = match.getTeam1() + " vs " + match.getTeam2();
+        String description = match.getTeam1Goals() + "-" + match.getTeam2Goals();
+
+        logger.info("Logging into wikidata");
+        ApiConnection connection = ApiConnection.getWikidataApiConnection();
+        connection.login("szabag", "wikipass111"); //secret
+
+        WikibaseDataEditor wbde = new WikibaseDataEditor(connection, siteIri);
+        ItemDocument itemDocument = ItemDocumentBuilder.forItemId(noid)
+                .withLabel(label, "en")
+                .withDescription(description, "en")
+                .withStatement(statement1)
+                .withStatement(statement2)
+                .withStatement(statement3)
+                .withStatement(statement4)
+                .withStatement(statement5)
+                .build();
+
+        logger.info("Inserting new itemdocument via wikitoolkit");
+        ItemDocument newItemDocument = wbde.createItemDocument(itemDocument,
+                "Wikisport data generation");
+
+        ItemIdValue newItemId = newItemDocument.getEntityId();
+        logger.info("New item created with id: " + newItemId.getId());
+        match.setWikidataId(newItemId.getId());
+        return match;
+    }
+
+
+    public static void main(String [] args) throws MediaWikiApiErrorException, IOException, LoginFailedException {
+        PropertyIdValue stringProperty1;
+        ItemIdValue noid = ItemIdValue.NULL;
+        WikibaseDataFetcher wbdf = WikibaseDataFetcher.getWikidataDataFetcher();
+        PropertyIdValue instanceOfStatement = ((PropertyDocument) wbdf.getEntityDocument("P31")).getEntityId();
+
+        Statement statement1 = StatementBuilder
+                .forSubjectAndProperty(noid, instanceOfStatement)
+                .withValue(Datamodel.makeWikidataItemIdValue("Q16466010")).build();
+        ApiConnection connection = ApiConnection.getWikidataApiConnection();
+        connection.login("szabag", "wikipass111");
+        if(!connection.isLoggedIn()){
+            return;
+        }
+        WikibaseDataEditor wbde = new WikibaseDataEditor(connection, siteIri);
+        ItemDocument itemDocument = ItemDocumentBuilder.forItemId(noid)
+                .withLabel("football match", "en").withStatement(statement1)
+                .build();
+
+        ItemDocument newItemDocument = wbde.createItemDocument(itemDocument,
+                "Wikidata Toolkit example test item creation");
+
+        ItemIdValue newItemId = newItemDocument.getEntityId();
+        System.out.println("*** Successfully created a new item "
+                + newItemId.getId()
+                + " (see https://wikidata.org/w/index.php?title="
+                + newItemId.getId() + "&oldid="
+                + newItemDocument.getRevisionId() + " for this version)");
+
     }
 
 }
