@@ -44,6 +44,7 @@ public class WikidataService {
                     {"Manchester City F.C.", "MCI"},
                     {"Liverpool F.C.", "LIV"}
             }).collect(Collectors.toMap(kv -> (String) kv[0], kv -> (String) kv[1]));
+    public static final String TEAM_NAME = "teamName";
 
     public WikidataService(){
         logger.info("Wikidata service initialized");
@@ -71,7 +72,8 @@ public class WikidataService {
             logger.info("Getting teams");
             Endpoint sp = new Endpoint(serviceUrl, false);
 
-            HashMap hashMap = sp.query(SparqlQueries.getOnlyNames);
+            HashMap hashMap = sp.query(SparqlQueries.get2018_19Names);
+
             List<String> headers = getHeaders(hashMap,30);
 
             WikidataTableObject rs = new WikidataTableObject("Premier league matches");
@@ -99,7 +101,7 @@ public class WikidataService {
         int index = -1;
         for (HashMap<String, Object> row : (ArrayList<HashMap>) result.get("rows")) {
             index++;
-            String addable = nameMap.get(row.get("teamLabel").toString());
+            String addable = nameMap.get(row.get(TEAM_NAME).toString());
             row.put(addable, "-");
             headers.add(addable);
 
@@ -125,9 +127,8 @@ public class WikidataService {
         for (HashMap<String, Object> row : (ArrayList<HashMap>) result.get("rows")) {
 
             for (String variable : variables) {
-                //System.out.println(value.get(variable));
 
-                if(variable.equals("teamLabel")) {
+                if(variable.equals(TEAM_NAME)) {
                     System.out.print(String.format("%-" + size + "." + size + "s", row.get(variable)) + " | ");
                     String addable = nameMap.get(row.get(variable).toString());
                     headers.add(addable);

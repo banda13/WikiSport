@@ -26,6 +26,18 @@ class SparqlQueries {
             "}\n" +
             "ORDER BY ?Name";
 
+    public static final String get2018_19Names = "SELECT DISTINCT ?teamName WHERE {\n" +
+            "  ?team wdt:P3450 wd:Q9448.\n" +
+            "  ?team wdt:P31 wd:Q27020041.\n" +
+            "  ?team wdt:P17 wd:Q145.\n" +
+            "  ?team wdt:P2348 wd:Q52394608.\n" +
+            "  ?team wdt:P1923 ?participating.\n" +
+            "  OPTIONAL { ?participating rdfs:label ?teamName.\n" +
+            "             FILTER(LANG(?teamName) = \"en\").}\n" +
+            "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n" +
+            "}\n" +
+            "ORDER BY ?teamName";
+
     public static final String getWinners = "SELECT DISTINCT ?leagueLabel ?nyertesLabel ?merkozesek_szama WHERE {\n" +
             "  ?league wdt:P3450 wd:Q9448.\n" +
             "  ?league wdt:P1346 ?nyertes.\n" +
