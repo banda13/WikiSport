@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.wikidata.wdtk.datamodel.helpers.Datamodel;
 import org.wikidata.wdtk.datamodel.helpers.ItemDocumentBuilder;
 import org.wikidata.wdtk.datamodel.helpers.StatementBuilder;
-import org.wikidata.wdtk.datamodel.implementation.TimeValueImpl;
 import org.wikidata.wdtk.datamodel.interfaces.*;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 import org.wikidata.wdtk.wikibaseapi.LoginFailedException;
@@ -22,7 +21,6 @@ import org.wikidata.wdtk.wikibaseapi.WikibaseDataFetcher;
 import org.wikidata.wdtk.wikibaseapi.apierrors.MediaWikiApiErrorException;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,6 +59,22 @@ public class WikidataService {
 
     public WikidataService(){
         logger.info("Wikidata service initialized");
+    }
+
+    public static List<String> get2018_19Teams(){
+        logger.info("Getting 2018-19 teams");
+        try {
+            Endpoint sp = new Endpoint(serviceUrl, false);
+            HashMap hashMap = (HashMap)  sp.query(SparqlQueries.get2018_19Names).get("result");
+            List<String> teamNames = new ArrayList<>();
+            for (HashMap<String, Object> row :  (ArrayList<HashMap>) hashMap.get("rows")) {
+                teamNames.add(row.get(TEAM_NAME).toString());
+            }
+            return teamNames;
+        } catch (EndpointException e) {
+            logger.error("Failed to get 2018-19 team names", e);
+            return null;
+        }
     }
 
     public WikidataTableObject getPremierLeagueTeams() {
@@ -328,7 +342,5 @@ public class WikidataService {
         match.setWikidataId(newItemId.getId());
         return match;
     }
-
-
 
 }

@@ -80,7 +80,7 @@ public class DefaultController {
     @GetMapping("/insert")
     public String insert(Model model){
         model.addAttribute("match", new Match());
-        model.addAttribute("teams", service.getIdsForTeams().keySet());
+        model.addAttribute("teams", service.get2018_19Teams());
         return "/insert";
     }
 
