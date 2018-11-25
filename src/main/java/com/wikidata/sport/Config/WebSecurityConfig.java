@@ -32,7 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/", "/home", "/about").permitAll()
-                .antMatchers("/admin/**").hasAnyRole("ADMIN")
+                .antMatchers("/admin/**", "/insert", "/insert_result").hasAnyRole("ADMIN")
                 .antMatchers("/user/**").hasAnyRole("USER")
                 .anyRequest().authenticated()
                 .and()
@@ -64,6 +64,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .inMemoryAuthentication()
                     .passwordEncoder(encoder).withUser("test").password("{noop}asd123").roles("USER")
                 .and()
-                    .passwordEncoder(encoder).withUser("admin").password("{noop}password").roles("ADMIN");
+                    .passwordEncoder(encoder).withUser("admin").password("{noop}admin").roles("ADMIN");
     }
 }

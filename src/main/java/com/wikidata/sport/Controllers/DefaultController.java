@@ -1,5 +1,6 @@
 package com.wikidata.sport.Controllers;
 
+import com.wikidata.sport.Model.Match;
 import com.wikidata.sport.Model.WikidataFormObject;
 import com.wikidata.sport.Model.WikidataObject;
 import com.wikidata.sport.Model.WikidataTableObject;
@@ -10,9 +11,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.wikidata.wdtk.datamodel.helpers.Datamodel;
+import org.wikidata.wdtk.datamodel.helpers.EntityDocumentBuilder;
+import org.wikidata.wdtk.datamodel.helpers.StatementBuilder;
+import org.wikidata.wdtk.datamodel.interfaces.*;
+import org.wikidata.wdtk.wikibaseapi.ApiConnection;
+import org.wikidata.wdtk.wikibaseapi.WikibaseDataEditor;
+import org.wikidata.wdtk.wikibaseapi.WikibaseDataFetcher;
+import org.wikidata.wdtk.wikibaseapi.apierrors.MediaWikiApiErrorException;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +73,20 @@ public class DefaultController {
         String teamId = teamMapping.get(name);
         model.addAttribute("team", service.getDetailsForId(name, teamId));
         return "/team";
+    }
+
+    @GetMapping("/insert")
+    public String insert(Model model){
+        model.addAttribute("match", new Match());
+        model.addAttribute("teams", service.getIdsForTeams().keySet());
+        return "/insert";
+    }
+
+    @PostMapping("/create")
+    public String insert_post(@ModelAttribute Match newMatch, Model model){
+        logger.info(newMatch.getTeam1() + " " + newMatch.getTeam2());
+        model.addAttribute("newMatch", newMatch);
+        return "/insert_result";
     }
 
     @GetMapping("/seasons")

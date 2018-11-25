@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>WikiSport</title>
+    <div th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+<div class="container">
+    <div>
+        <h1>Creating new match</h1>
+
+        <form action="#" th:action="@{/create}" th:object="${match}" method="post">
+            <div>
+                <b>Team 1:</b>
+                <select required class="form-control" th:field="*{team1}">
+                    <option th:each="i : ${teams}" th:value="${i}" th:text="${i}">
+                    </option>
+                </select>
+            </div>
+            <div>
+                <b>Team 2:</b>
+            <select required class="form-control" th:field="*{team2}">
+                <option th:each="i : ${teams}" th:value="${i}" th:text="${i}">
+                </option>
+            </select>
+            </div>
+
+            <b>Team 1 goals</b>
+            <input required type="number" class="form-control" id="goals1" th:field="*{team1Goals}">
+
+            <b>Team 2 goals</b>
+            <input required type="number" class="form-control" id="goals2" th:field="*{team2Goals}">
+
+            <b>Date</b>
+            <input required type="date" class="form-control" id="date" th:field="*{matchDate}">
+
+            <p><input class="btn btn-success" type="submit" value="Submit" />
+                <input class="btn btn-warning" type="reset" value="Reset" /></p>
+        </form>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"/>
+</body>
+</html>

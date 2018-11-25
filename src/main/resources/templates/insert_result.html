@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>WikiSport</title>
+    <div th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+<div class="container">
+    <div>
+        <h1>New match created</h1>
+
+        <p th:text="'Team 1: ' + ${newMatch.team1}" />
+        <p th:text="'Team 2: ' + ${newMatch.team2}" />
+        <p th:text="'Score: ' + ${newMatch.team1Goals} + ' - ' + ${newMatch.team2Goals}" />
+        <p th:text="'Date: ' + ${newMatch.matchDate}" />
+        <a href="/insert">Create new match</a>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"/>
+</body>
+</html>
