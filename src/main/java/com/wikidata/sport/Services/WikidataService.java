@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.wikidata.wdtk.datamodel.helpers.Datamodel;
 import org.wikidata.wdtk.datamodel.helpers.ItemDocumentBuilder;
 import org.wikidata.wdtk.datamodel.helpers.StatementBuilder;
+import org.wikidata.wdtk.datamodel.implementation.TimeValueImpl;
 import org.wikidata.wdtk.datamodel.interfaces.*;
 import org.wikidata.wdtk.wikibaseapi.ApiConnection;
 import org.wikidata.wdtk.wikibaseapi.LoginFailedException;
@@ -288,7 +289,7 @@ public class WikidataService {
                 .withValue(Datamodel.makeWikidataItemIdValue(WikidataConsts.ASSOSIATIONFOOTBALLMATCH)).build();
         Statement statement2 = StatementBuilder
                 .forSubjectAndProperty(noid, partOfStatement)
-                .withValue(Datamodel.makeWikidataItemIdValue(WikidataConsts.PREMIERLEAGUE)).build();
+                .withValue(Datamodel.makeWikidataItemIdValue(WikidataConsts.PERIOD18_19)).build();
 
         Statement statement3 = StatementBuilder
                 .forSubjectAndProperty(noid, participant1Statement)

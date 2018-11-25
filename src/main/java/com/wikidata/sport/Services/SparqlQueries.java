@@ -75,10 +75,10 @@ class SparqlQueries {
             "";
 
     public static String getMatchResults = "SELECT ?matchLabel ?matchDescription ?nyertesLabel WHERE {\n" +
-            "  ?match (wdt:P31/wdt:P279*) wd:Q16466010.\n" +
-            "  ?match wdt:P361 wd:Q9448.\n" +
-            "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n" +
-            "  OPTIONAL { ?match wdt:P1346 ?nyertes. }\n" +
-            "}\n" +
-            "ORDER BY ?match";
+            "              ?match wdt:P31 wd:Q16466010.\n" +
+            "              ?match wdt:P361 wd:Q52394608.\n" +
+            "              SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n" +
+            "              OPTIONAL { ?match wdt:P1346 ?nyertes. }\n" +
+            "            }\n" +
+            "            ORDER BY ?match";
 }
