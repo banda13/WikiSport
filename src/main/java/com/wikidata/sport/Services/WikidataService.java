@@ -273,13 +273,28 @@ public class WikidataService {
 
         }
 
-        Collections.sort((ArrayList<HashMap<String, Object>>)  ((HashMap)hashMap.get("result")).get("rows"), new Comparator<HashMap<String, Object>>(){
-            public int compare(HashMap<String, Object> one, HashMap<String, Object> two) {
-                return one.get("points").toString().compareTo(two.get("points").toString());
-            }
-        });
-
         int countRows = ((ArrayList<HashMap>) result.get("rows")).size();
+        ArrayList<HashMap> sortedMap = new ArrayList<>();
+
+        for (HashMap<String, Object> row : (ArrayList<HashMap>) ((HashMap)hashMap.get("result")).get("rows")) {
+            HashMap maxPointsRow = null;
+
+            for (HashMap<String, Object> insideRow : (ArrayList<HashMap>) ((HashMap)hashMap.get("result")).get("rows")) {
+                if(maxPointsRow == null){
+                    maxPointsRow = insideRow;
+                } else {
+                    if(Integer.parseInt(insideRow.get("points").toString()) >= Integer.parseInt(maxPointsRow.get("points").toString()) &&
+                        !sortedMap.contains(insideRow)){
+                        maxPointsRow = insideRow;
+                    }
+                }
+            }
+            sortedMap.add(maxPointsRow);
+        }
+
+
+        ((HashMap)hashMap.get("result")).put("rows", sortedMap);
+
         int index = 0;
         for (HashMap<String, Object> row : (ArrayList<HashMap>) result.get("rows")) {
             index++;
